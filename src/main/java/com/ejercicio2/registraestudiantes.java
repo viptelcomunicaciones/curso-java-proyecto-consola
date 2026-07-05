@@ -3,6 +3,8 @@ package com.ejercicio2;
 import java.io.IOException;
 import java.util.List;
 
+import javax.swing.JFrame;
+
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.gui2.BasicWindow;
 import com.googlecode.lanterna.gui2.Button;
@@ -29,12 +31,13 @@ public class registraestudiantes {
         // Crear terminal con ventana Swing
         SwingTerminalFrame terminal = new SwingTerminalFrame(
                 "Sistema de Registro de Estudiantes",
-                new TerminalSize(100, 50),
+                new TerminalSize(120, 40),
                 TerminalEmulatorDeviceConfiguration.getDefault(),
                 SwingTerminalFontConfiguration.getDefault(),
                 TerminalEmulatorColorConfiguration.getDefault(),
                 TerminalEmulatorAutoCloseTrigger.CloseOnExitPrivateMode);
         terminal.setVisible(true);
+        terminal.setExtendedState(JFrame.MAXIMIZED_BOTH); // Pantalla completa
 
         Screen screen = new TerminalScreen(terminal);
         screen.startScreen();
@@ -43,18 +46,22 @@ public class registraestudiantes {
         Window window = new BasicWindow("");
         window.setHints(List.of(Window.Hint.CENTERED));
 
-        Panel panel = new Panel();
-        panel.setLayoutManager(new LinearLayout(Direction.VERTICAL));
+        Panel panel = new Panel(new LinearLayout(Direction.HORIZONTAL));
+        panel.addComponent(new EmptySpace(new TerminalSize(3, 1)));
 
-        // Título centrado
-        panel.addComponent(new Label("  SISTEMA DE REGISTRO DE ESTUDIANTES  "));
-        panel.addComponent(new EmptySpace(new TerminalSize(1, 1)));
-        panel.addComponent(new Label("  ------------------------------------  "));
-        panel.addComponent(new EmptySpace(new TerminalSize(1, 1)));
+        Panel contentPanel = new Panel();
+        contentPanel.setLayoutManager(new LinearLayout(Direction.VERTICAL));
+        panel.addComponent(contentPanel);
 
-        panel.addComponent(new Button("Registrar Estudiante", () -> {
+        // Título
+        contentPanel.addComponent(new Label("  SISTEMA DE REGISTRO DE ESTUDIANTES  "));
+        contentPanel.addComponent(new EmptySpace(new TerminalSize(1, 1)));
+        contentPanel.addComponent(new Label("  ------------------------------------  "));
+        contentPanel.addComponent(new EmptySpace(new TerminalSize(1, 1)));
+
+        contentPanel.addComponent(new Button("Registrar Estudiante", () -> {
             Window registroWindow = new BasicWindow("Registrar Estudiante");
-            Panel p = new Panel(new GridLayout(2));
+            Panel p = new Panel(new GridLayout(2).setVerticalSpacing(1).setHorizontalSpacing(2));
             TextBox nameBox = new TextBox().setPreferredSize(new TerminalSize(25, 1));
             TextBox ageBox = new TextBox().setPreferredSize(new TerminalSize(25, 1));
             TextBox gradeBox = new TextBox().setPreferredSize(new TerminalSize(25, 1));
@@ -80,7 +87,7 @@ public class registraestudiantes {
             gui.addWindow(registroWindow);
         }));
 
-        panel.addComponent(new Button("Mostrar Estudiantes", () -> {
+        contentPanel.addComponent(new Button("Mostrar Estudiantes", () -> {
             StringBuilder sb = new StringBuilder();
             for (EstudianteManager.Estudiante e : EstudianteManager.getEstudiantes()) {
                 sb.append(e.nombre()).append(" | Edad: ").append(e.edad()).append(" | Nota: ").append(e.nota())
@@ -89,9 +96,9 @@ public class registraestudiantes {
             MessageDialog.showMessageDialog(gui, "Estudiantes", sb.length() == 0 ? "No hay registros" : sb.toString());
         }));
 
-        panel.addComponent(new Button("Buscar Estudiante", () -> {
+        contentPanel.addComponent(new Button("Buscar Estudiante", () -> {
             Window buscarWindow = new BasicWindow("Buscar Estudiante");
-            Panel p = new Panel(new GridLayout(2));
+            Panel p = new Panel(new GridLayout(2).setVerticalSpacing(1).setHorizontalSpacing(2));
             TextBox nameBox = new TextBox().setPreferredSize(new TerminalSize(25, 1));
             p.addComponent(new Label("Nombre:"));
             p.addComponent(nameBox);
@@ -110,7 +117,7 @@ public class registraestudiantes {
             gui.addWindow(buscarWindow);
         }));
 
-        panel.addComponent(new Button("Calcular Promedio", () -> {
+        contentPanel.addComponent(new Button("Calcular Promedio", () -> {
             double promedio = EstudianteManager.calcularPromedio();
             String msg = EstudianteManager.getEstudiantes().isEmpty()
                     ? "No hay estudiantes registrados para calcular el promedio."
@@ -118,7 +125,7 @@ public class registraestudiantes {
             MessageDialog.showMessageDialog(gui, "Promedio de Notas", msg);
         }));
 
-        panel.addComponent(new Button("Salir", window::close));
+        contentPanel.addComponent(new Button("Salir", window::close));
 
         window.setComponent(panel);
         gui.addWindowAndWait(window);
