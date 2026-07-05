@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.Scanner;
 
-public class registrarestudiantes {
+public class registrarestudiantesOld {
     static String[] nombres = new String[100];
     static int[] edades = new int[100];
     static double[] notas = new double[100];
